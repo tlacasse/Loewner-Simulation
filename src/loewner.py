@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import cmath
 import numpy as np
+import numexpr
 from Equation import Expression
 
 # force to upper half-plane
@@ -22,19 +22,18 @@ class LESimulation:
             self.samples[i] = self.xi(i) 
             
         self.hull = self.samples.copy()
-        
+
     # reverse driving function at sample i
     def xi(self, i):
         frac_of_time = 1 - (i / self.mappings_count)
         return self.driving_function(self.time_upper_bound * frac_of_time)
     
     # upward LE conformal map for constant driving function
-    def conformal_map(self, z, c):
-        sq = (z - c) ** 2
-        return cmath.sqrt(sq + self.time_step_part) + c
-    
+    # time_step = -4t
+    def conformal_map(self, z, c, time_step):
+        return numexpr.evaluate('sqrt(((z - c) ** 2) + time_step) + c')
+
     def compute_hull(self):
-        for z in range(len(self.hull)):
-            for c in range(z, self.mappings_count):
-                self.hull[z] = self.conformal_map(self.hull[z], self.samples[c])
+        for i in range(1, len(self.hull)):
+            self.hull[:i] = self.conformal_map(self.hull[:i], self.samples[i-1], self.time_step_part)
         return self.hull
