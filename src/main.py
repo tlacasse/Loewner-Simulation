@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 import loewner as lw
 import time
 
-sim = lw.LESimulation('3', 20, 10000)
+sim = lw.LESimulation('t', 20, 10000)
 
 start = time.time()
 
