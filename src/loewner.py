@@ -23,9 +23,6 @@ class LESimulation:
     def __init__(self, driving_function, time_upper_bound, sample_count):
         self.driving_function = create_driving_function(driving_function)
         self.time_upper_bound = time_upper_bound
-        self.mappings_count = sample_count - 1
-        self.time_step_part = time_upper_bound / self.mappings_count
-        self.time_step_part = -4 * self.time_step_part
         self.sample_count = sample_count
         
         self.samples = np.empty(sample_count, dtype='complex128')
@@ -33,10 +30,13 @@ class LESimulation:
             self.samples[i] = self.xi(i) 
             
         self.hull = self.samples.copy()
-
+        
+        self.time_step_part = time_upper_bound / (self.sample_count - 1)
+        self.time_step_part = -4 * self.time_step_part
+         
     # reverse driving function at sample i
     def xi(self, i):
-        frac_of_time = 1 - (i / self.mappings_count)
+        frac_of_time = 1 - (i / (self.sample_count - 1))
         return self.driving_function(self.time_upper_bound * frac_of_time)
     
     # upward LE conformal map for constant driving function
