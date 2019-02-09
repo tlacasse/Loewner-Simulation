@@ -7,10 +7,21 @@ from Equation import Expression
 def imflip(z):
     return z if z.imag >= 0 else -z
 
+# use first letter found as the variable for the expression
+def create_driving_function(equation_string):
+    var = 't'
+    for c in equation_string:
+        code = ord(c)
+        # exlcude 'e' as it's Euler's constant
+        if (code >= ord('a') and code <= ord('z') and not code == ord('e')):
+            var = c
+            break
+    return Expression(equation_string, [var])
+
 class LESimulation:
     
     def __init__(self, driving_function, time_upper_bound, sample_count):
-        self.driving_function = Expression(driving_function, ["x"])
+        self.driving_function = create_driving_function(driving_function)
         self.time_upper_bound = time_upper_bound
         self.mappings_count = sample_count - 1
         self.time_step_part = time_upper_bound / self.mappings_count
