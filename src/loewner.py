@@ -14,19 +14,14 @@ class LESimulation:
         self.time_upper_bound = time_upper_bound
         self.sample_count = sample_count
         
-        self.samples = np.empty(sample_count, dtype='complex128')
-        for i in range(sample_count):
-            self.samples[i] = self.xi(i) 
-            
-        self.hull = self.samples.copy()
+        self.time_domain = np.linspace(0, self.time_upper_bound, self.sample_count)
+        self.time_domain = self.time_domain[::-1]
+        self.samples = np.empty(sample_count, dtype='double')
+        self.samples[:] = self.driving_function(self.time_domain[:])
+        self.hull = self.samples.astype(dtype='complex128')
         
         self.time_step_part = time_upper_bound / (self.sample_count - 1)
         self.time_step_part = -4 * self.time_step_part
-         
-    # reverse driving function at sample i
-    def xi(self, i):
-        frac_of_time = 1 - (i / (self.sample_count - 1))
-        return self.driving_function(self.time_upper_bound * frac_of_time)
     
     # upward LE conformal map for constant driving function
     # time_step = -4t
