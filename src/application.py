@@ -1,7 +1,9 @@
 import tkinter as tk
 import time
+
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 from loewner import LESimulation
 
 class Application(tk.Frame):
@@ -16,6 +18,11 @@ class Application(tk.Frame):
         self.master.title('Loewner Simulation')
         self.master.geometry("1024x640")
         
+        self.setup_inputs()
+        self.setup_runbutton()
+        self.setup_graphs()
+        
+    def setup_inputs(self):
         self.label_entry_df = tk.Label(self, text = 'Driving Function (t): ')
         self.label_entry_df.grid(row = 1, column = 1, padx = 10, pady = 10)
         self.entry_df = tk.Entry(self, exportselection = 0)
@@ -34,6 +41,7 @@ class Application(tk.Frame):
         self.entry_samples.insert(0, '1000')
         self.entry_samples.grid(row = 3, column = 2)
         
+    def setup_runbutton(self):
         self.button_run = tk.Button(self)
         self.button_run['text'] = 'Run'
         self.button_run['command'] = self.run_simulation
@@ -42,6 +50,7 @@ class Application(tk.Frame):
         self.label_time = tk.Label(self)
         self.label_time.grid(row = 4, column = 3)
         
+    def setup_graphs(self):
         self.figure_df = Figure(figsize=(5, 4), dpi = 95)
         self.canvas_df = FigureCanvasTkAgg(self.figure_df, master = self)
         self.canvas_df.draw()
@@ -58,21 +67,24 @@ class Application(tk.Frame):
         sim = LESimulation(self.entry_df.get(), 
                            int(self.entry_time.get()), 
                            int(self.entry_samples.get()))
+        self.before_run_simulation(sim)
+        
+        start = time.time()
+        sim.compute_hull()
+        stop = time.time()
+        
+        self.label_time['text'] = 'Computation Time: ' + str(stop - start) + 's'
+        self.after_run_simulation(sim)
+        
+    def before_run_simulation(self, sim):
         self.entry_df.delete(0, tk.END)
         self.entry_df.insert(0, sim.driving_function_text)
         
-        start = time.time()
-        hull = sim.compute_hull()
-        stop = time.time()
-        for i in hull:
-            print(i)
-        
-        self.label_time['text'] = 'Computation Time: ' + str(stop - start) + 's'
-        
+    def after_run_simulation(self, sim):
         self.figure_df.clf()
         self.figure_df.add_subplot(111).plot(sim.time_domain, sim.samples)
         self.canvas_df.draw()
         
         self.figure_hull.clf()
-        self.figure_hull.add_subplot(111).plot(hull.real, hull.imag)
+        self.figure_hull.add_subplot(111).plot(sim.hull.real, sim.hull.imag)
         self.canvas_hull.draw()
