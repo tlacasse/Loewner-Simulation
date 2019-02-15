@@ -8,11 +8,19 @@ def _imflip(z):
 
 imflip = np.vectorize(_imflip)
 
+def fix_equation_input(eq):
+    result = ""
+    for i in range(len(eq)):
+        if (i > 0 and eq[i].isalpha() and eq[i-1].isnumeric()):
+            result += '*'
+        result += eq[i]
+    return result
+
 class LESimulation:
     
     def __init__(self, driving_function, time_upper_bound, sample_count):
-        self.driving_function = Expression(driving_function, ['t'])
-        self.driving_function_text = driving_function
+        self.driving_function_text = fix_equation_input(driving_function)
+        self.driving_function = Expression(self.driving_function_text, ['t'])
         self.time_upper_bound = time_upper_bound
         self.sample_count = sample_count
         

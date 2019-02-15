@@ -58,6 +58,9 @@ class Application(tk.Frame):
         sim = LESimulation(self.entry_df.get(), 
                            int(self.entry_time.get()), 
                            int(self.entry_samples.get()))
+        self.entry_df.delete(0, tk.END)
+        self.entry_df.insert(0, sim.driving_function_text)
+        
         start = time.time()
         hull = sim.compute_hull()
         stop = time.time()
