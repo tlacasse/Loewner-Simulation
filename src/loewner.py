@@ -3,8 +3,10 @@ import numexpr
 from Equation import Expression
 
 # force to upper half-plane
-def imflip(z):
+def _imflip(z):
     return z if z.imag >= 0 else -z
+
+imflip = np.vectorize(_imflip)
 
 class LESimulation:
     
@@ -26,7 +28,7 @@ class LESimulation:
     # upward LE conformal map for constant driving function
     # time_step = -4t
     def conformal_map(self, z, c, time_step):
-        return numexpr.evaluate('sqrt(((z - c) ** 2) + time_step) + c')
+        return imflip(numexpr.evaluate('sqrt(((z - c) ** 2) + time_step)')) + c
 
     def compute_hull(self):
         for i in range(1, len(self.hull)):
