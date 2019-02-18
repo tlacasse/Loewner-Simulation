@@ -42,18 +42,23 @@ class Application(tk.Frame):
         self.frame_runmessage.update('')
 
     def run_simulation(self):
-        sim = LESimulation(self.frame_inputs.entry_df.get(), 
-                           int(self.frame_inputs.entry_time.get()), 
-                           int(self.frame_inputs.entry_samples.get()))
-        self.frame_inputs.update(sim)
-        
-        start = time.time()
-        sim.compute_hull()
-        stop = time.time()
-        
-        self.frame_runmessage.update('Computation Time: ' + str(stop - start) + 's')
-        self.frame_graphs_df.update(sim.time_domain, sim.samples)
-        self.frame_graphs_hull.update(sim.hull.real, sim.hull.imag)
+        try:
+            sim = LESimulation(self.frame_inputs.entry_df.get(), 
+                               int(self.frame_inputs.entry_time.get()), 
+                               int(self.frame_inputs.entry_samples.get()))
+            self.frame_inputs.update(sim)
+            
+            start = time.time()
+            sim.compute_hull()
+            stop = time.time()
+            
+            self.frame_runmessage.update('Computation Time: ' + str(stop - start) + 's')
+            self.frame_graphs_df.update(sim.time_domain, sim.samples)
+            self.frame_graphs_hull.update(sim.hull.real, sim.hull.imag)
+        except Exception as e:
+            message = str(e)
+            message = message[(message.rfind(')')+1):]
+            self.frame_runmessage.update(message) #todo: improve this
         
 class InputFrame(tk.Frame):
     
