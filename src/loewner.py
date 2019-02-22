@@ -3,10 +3,10 @@ import numexpr
 from Equation import Expression
 
 # force to upper half-plane
-def _imflip(z):
+def _zflip(z):
     return z if z.imag >= 0 else -z
 
-imflip = np.vectorize(_imflip)
+zflip = np.vectorize(_zflip)
 
 def fix_equation_input(eq):
     result = ""
@@ -24,19 +24,22 @@ class LESimulation:
         self.time_upper_bound = time_upper_bound
         self.sample_count = sample_count
         
+        self.time_step_part = time_upper_bound / (self.sample_count - 1)
+        self.time_step_part = -4 * self.time_step_part  
+        
+        self.setup_samples()
+        
+    def setup_samples(self):
         self.time_domain = np.linspace(0, self.time_upper_bound, self.sample_count)
         self.time_domain = self.time_domain[::-1]
-        self.samples = np.empty(sample_count, dtype='double')
+        self.samples = np.empty(self.sample_count, dtype='double')
         self.samples[:] = self.driving_function(self.time_domain[:])
         self.hull = self.samples.astype(dtype='complex128')
-        
-        self.time_step_part = time_upper_bound / (self.sample_count - 1)
-        self.time_step_part = -4 * self.time_step_part
     
     # upward LE conformal map for constant driving function
     # time_step = -4t
     def conformal_map(self, z, c, time_step):
-        return imflip(numexpr.evaluate('sqrt(((z - c) ** 2) + time_step)')) + c
+        return zflip(numexpr.evaluate('sqrt(((z - c) ** 2) + time_step)')) + c
 
     def compute_hull(self):
         for i in range(1, len(self.hull)):
