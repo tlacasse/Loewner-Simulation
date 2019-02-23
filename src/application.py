@@ -66,9 +66,9 @@ class Application(tk.Frame):
         self.execute(self.__export_simulation)
             
     def __run_simulation(self):
-        sim = LESimulation(self.frame_inputs.entry_df.get(), 
-                               int(self.frame_inputs.entry_time.get()), 
-                               int(self.frame_inputs.entry_samples.get()))
+        sim = LESimulation(self.frame_inputs.get_df(), 
+                               self.frame_inputs.get_time_bound(), 
+                               self.frame_inputs.get_samples())
 
         self.sim = sim
         self.frame_inputs.update_from_sim(sim)
