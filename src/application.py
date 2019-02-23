@@ -5,8 +5,10 @@ from frames.input import InputFrame
 from frames.runbutton import RunButtonFrame
 from frames.graph import GraphFrame
 from frames.runmessage import RunMessageFrame
+from frames.exportbutton import ExportButtonFrame
 
 from loewner import LESimulation
+import lwio
 import time
 
 class Application(tk.Frame):
@@ -16,6 +18,7 @@ class Application(tk.Frame):
         self.master = master
         self.grid()
         self.setup()
+        self.sim = None
 
     def setup(self):
         self.master.title('Loewner Simulation')
@@ -40,23 +43,41 @@ class Application(tk.Frame):
         self.frame_graphs_hull = GraphFrame(self)
         self.frame_graphs_hull.grid( row = 2, column = 2, columnspan = 2 )
         
+        self.frame_exportbutton = ExportButtonFrame(self, self.export_simulation)
+        self.frame_exportbutton.grid( row = 3, column = 0, columnspan = 2 )
+        
         self.frame_runmessage.update('')
-
-    def run_simulation(self):
+        
+    def execute(self, func):
         try:
-            sim = LESimulation(self.frame_inputs.entry_df.get(), 
-                               int(self.frame_inputs.entry_time.get()), 
-                               int(self.frame_inputs.entry_samples.get()))
-            self.frame_inputs.update_from_sim(sim)
-            
             start = time.time()
-            sim.compute_hull()
+            func()
             stop = time.time()
-            
             self.frame_runmessage.update('Computation Time: ' + str(stop - start) + 's')
-            self.frame_graphs_df.update(sim.time_domain, sim.samples)
-            self.frame_graphs_hull.update(sim.hull.real, sim.hull.imag)
         except Exception as e:
             message = str(e)
             message = message[(message.rfind(')')+1):]
             self.frame_runmessage.update(message) #todo: improve this
+
+    def run_simulation(self):
+        self.execute(self.__run_simulation)
+        
+    def export_simulation(self):
+        self.execute(self.__export_simulation)
+            
+    def __run_simulation(self):
+        sim = LESimulation(self.frame_inputs.entry_df.get(), 
+                               int(self.frame_inputs.entry_time.get()), 
+                               int(self.frame_inputs.entry_samples.get()))
+
+        self.sim = sim
+        self.frame_inputs.update_from_sim(sim)
+        
+        sim.compute_hull()
+        
+        self.frame_graphs_df.update(sim.time_domain, sim.samples)
+        self.frame_graphs_hull.update(sim.hull.real, sim.hull.imag)
+            
+    def __export_simulation(self):
+        if (self.sim != None):
+            lwio.export_sim(self.sim, 'sim.csv', True, True)
