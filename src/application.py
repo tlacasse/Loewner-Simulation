@@ -6,6 +6,7 @@ from frames.runbutton import RunButtonFrame
 from frames.graph import GraphFrame
 from frames.runmessage import RunMessageFrame
 from frames.exportbutton import ExportButtonFrame
+from frames.popups.export import create_export_popup
 
 from loewner import LESimulation
 import lwio
@@ -43,11 +44,11 @@ class Application(tk.Frame):
         self.frame_graphs_hull = GraphFrame(self)
         self.frame_graphs_hull.grid( row = 2, column = 2, columnspan = 2 )
         
-        self.frame_exportbutton = ExportButtonFrame(self, self.export_simulation)
+        self.frame_exportbutton = ExportButtonFrame(self, self.show_export_popup)
         self.frame_exportbutton.grid( row = 3, column = 0, columnspan = 2 )
         
         self.frame_runmessage.update('')
-        
+
     def execute(self, func):
         try:
             start = time.time()
@@ -57,7 +58,11 @@ class Application(tk.Frame):
         except Exception as e:
             message = str(e)
             message = message[(message.rfind(')')+1):]
-            self.frame_runmessage.update(message) #todo: improve this
+            self.frame_runmessage.update(message) #todo: improve this 
+    
+    def show_export_popup(self):
+        if (self.sim != None):
+            self.frame_export = create_export_popup(self.export_simulation)
 
     def run_simulation(self):
         self.execute(self.__run_simulation)
@@ -79,5 +84,13 @@ class Application(tk.Frame):
         self.frame_graphs_hull.update(sim.hull.real, sim.hull.imag)
             
     def __export_simulation(self):
-        if (self.sim != None):
-            lwio.export_sim(self.sim, 'sim.csv', True, True)
+        what = self.frame_export.get_what_to_export()
+        print('what:' + what)
+        export_samples = False
+        export_hull = False
+        if (what == 'samples' or what == 'both'):
+            export_samples = True
+        if (what == 'hull' or what == 'both'):
+            export_hull = True
+        path = self.frame_export.export_path
+        lwio.export_sim(self.sim, path, export_samples, export_hull)
