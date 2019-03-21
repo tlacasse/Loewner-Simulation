@@ -29,7 +29,7 @@ class InputFrame(tk.Frame):
     
     def update_from_sim(self, sim):
         self.entry_df.delete(0, tk.END)
-        self.entry_df.insert(0, sim.driving_function_text)
+        self.entry_df.insert(0, sim.driving_function)
         
     def get_df(self):
         return self.entry_df.get()

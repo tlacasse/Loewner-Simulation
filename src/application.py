@@ -71,7 +71,8 @@ class Application(tk.Frame):
         self.execute(self.__export_simulation)
             
     def __run_simulation(self):
-        sim = LESimulation(self.frame_inputs.get_df(), 
+        sim = LESimulation()
+        sim.init_equation(self.frame_inputs.get_df(), 
                                self.frame_inputs.get_time_bound(), 
                                self.frame_inputs.get_samples())
 
@@ -85,7 +86,6 @@ class Application(tk.Frame):
             
     def __export_simulation(self):
         what = self.frame_export.get_what_to_export()
-        print('what:' + what)
         export_samples = False
         export_hull = False
         if (what == 'samples' or what == 'both'):

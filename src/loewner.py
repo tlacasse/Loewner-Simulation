@@ -1,6 +1,6 @@
 import numpy as np
 import numexpr
-from Equation import Expression
+from brownian import brownian
 
 # force to upper half-plane
 def _zflip(z):
@@ -9,7 +9,7 @@ def _zflip(z):
 zflip = np.vectorize(_zflip)
 
 def fix_equation_input(eq):
-    result = ""
+    result = ''
     for i in range(len(eq)):
         if (i > 0 and eq[i].isalpha() and eq[i-1].isnumeric()):
             result += '*'
@@ -18,23 +18,46 @@ def fix_equation_input(eq):
 
 class LESimulation:
     
-    def __init__(self, driving_function, time_upper_bound, sample_count):
-        self.driving_function_text = fix_equation_input(driving_function)
-        self.driving_function = Expression(self.driving_function_text, ['t'])
+    def __init__(self):
+        self.initialized = False
+        self.init_type = ''
+        
+    def init_equation(self, driving_function, time_upper_bound, sample_count):
+        self.driving_function = fix_equation_input(driving_function)
         self.time_upper_bound = time_upper_bound
         self.sample_count = sample_count
         
         self.time_step_part = time_upper_bound / (self.sample_count - 1)
         self.time_step_part = -4 * self.time_step_part  
         
-        self.setup_samples()
-        
-    def setup_samples(self):
         self.time_domain = np.linspace(0, self.time_upper_bound, self.sample_count)
         self.time_domain = self.time_domain[::-1]
         self.samples = np.empty(self.sample_count, dtype='double')
-        self.samples[:] = self.driving_function(self.time_domain[:])
+        self.setup_samples_from_equation()
+        
         self.hull = self.samples.astype(dtype='complex128')
+        self.initialized = True
+        self.init_type = 'equation'
+        
+    def setup_samples_from_equation(self):
+        try:
+            # throws an exception if not found
+            if (self.driving_function.index('Bt')+1):
+                x0 = 0.0
+                n = self.sample_count - 1
+                dt = self.time_upper_bound / n
+                delta = 2
+                
+                Bt = brownian(x0, n, dt, delta)[::-1]
+                Bt = np.resize(Bt, n + 1)
+                Bt[-1] = x0
+        except:
+            pass
+        
+        t = self.time_domain ;t=t
+        # "+(0*t)" to ensure the correct number of samples (for constant functions)
+        eq = '(' + self.driving_function + ')+(0*t)'
+        self.samples = numexpr.evaluate(eq)
     
     # upward LE conformal map for constant driving function
     # time_step = -4t
