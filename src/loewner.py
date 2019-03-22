@@ -51,6 +51,7 @@ class LESimulation:
                 Bt = brownian(x0, n, dt, delta)[::-1]
                 Bt = np.resize(Bt, n + 1)
                 Bt[-1] = x0
+                self.Bt = Bt
         except:
             pass
         
