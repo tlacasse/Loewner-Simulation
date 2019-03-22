@@ -102,3 +102,14 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+
+
+
+# dev testing files
+
+test.py
+wogpfjahfo.py
+sim.csv
+waffle.csv
+
