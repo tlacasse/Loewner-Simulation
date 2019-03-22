@@ -55,6 +55,8 @@ class ExportFrame(tk.Frame):
     def pick_export_path(self):
         self.export_path = filedialog.asksaveasfilename()
         self.label_export_path['text'] = self.export_path
+        self.master.lift()
+        self.master.focus_force()
         
     def get_what_to_export(self):
         return self.var_exportwhat.get()
