@@ -27,8 +27,10 @@ class LESimulation:
         self.time_upper_bound = time_upper_bound
         self.sample_count = sample_count
         
-        self.time_step_part = time_upper_bound / (self.sample_count - 1)
-        self.time_step_part = -4 * self.time_step_part  
+        self.time_step_part = np.empty(self.sample_count - 1, dtype='double')
+        time_step_part = time_upper_bound / (self.sample_count - 1)
+        time_step_part = -4 * time_step_part
+        self.time_step_part[:] = time_step_part  
         
         self.time_domain = np.linspace(0, self.time_upper_bound, self.sample_count)
         self.time_domain = self.time_domain[::-1]
@@ -39,6 +41,26 @@ class LESimulation:
         self.initialized = True
         self.init_type = 'equation'
         
+        print(self.time_step_part)
+        
+    def init_points(self, time_domain, samples):
+        self.driving_function = ''
+        
+        self.time_upper_bound = max(time_domain)
+        self.sample_count = len(samples)
+        
+        self.time_domain = np.array(time_domain, dtype='double')
+        self.samples = np.array(samples, dtype='double')
+        
+        self.time_step_part = np.empty(self.sample_count - 1, dtype='double')
+        for i in range(self.sample_count - 1):
+            self.time_step_part[i] = -4 * abs(
+                    self.time_domain[i + 1] - self.time_domain[i]) # need to fix
+        
+        self.hull = self.samples.astype(dtype='complex128')
+        self.initialized = True
+        self.init_type = 'file'
+        
     def setup_samples_from_equation(self):
         try:
             # throws an exception if not found
@@ -46,7 +68,7 @@ class LESimulation:
                 x0 = 0.0
                 n = self.sample_count - 1
                 dt = self.time_upper_bound / n
-                delta = 2
+                delta = 1
                 
                 Bt = brownian(x0, n, dt, delta)[::-1]
                 Bt = np.resize(Bt, n + 1)
@@ -66,6 +88,7 @@ class LESimulation:
         return zflip(numexpr.evaluate('sqrt(((z - c) ** 2) + time_step)')) + c
 
     def compute_hull(self):
+        self.hull = self.samples.astype(dtype='complex128')
         for i in range(1, len(self.hull)):
-            self.hull[:i] = self.conformal_map(self.hull[:i], self.samples[i-1], self.time_step_part)
+            self.hull[:i] = self.conformal_map(self.hull[:i], self.samples[i-1], self.time_step_part[i-1])
         return self.hull

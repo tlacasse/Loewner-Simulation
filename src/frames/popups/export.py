@@ -28,7 +28,7 @@ class ExportFrame(tk.Frame):
         self.button_getpath['command'] = self.pick_export_path
         self.button_getpath.grid( row = 0, column = 0, ipadx = 20 )
         
-        self.label_export_path = tk.Label(self, text = 'TEST')
+        self.label_export_path = tk.Label(self, text = '')
         self.label_export_path.grid( row = 0, column = 1, columnspan = 2 )
         
         self.radio_exportwhat_samples = self.setup_radio('Samples', 0)
