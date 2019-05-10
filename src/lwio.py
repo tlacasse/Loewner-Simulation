@@ -1,5 +1,6 @@
 from loewner import LESimulation
 import numpy as np
+import numexpr
 
 def clean_complex(z):
     if (hasattr(z, 'real')):
@@ -86,16 +87,19 @@ class ImportFile:
     def includes_time_values(self):
         return self.columns > 1
     
-    def create_sim(self, time_bound = 0.0):
-        sim = LESimulation()
+    def create_sim(self, time_bound = 0.0, trans_func = 'x'):
         if (not self.includes_time_values()):
            self.column_time = np.linspace(0, time_bound, self.rows)
            
         # sort both columns
         combined = list(zip(self.column_time, self.column_lambda))
         combined.sort(key=(lambda x: x[0]), reverse=True)
-        self.column_time = [x[0] for x in combined]
-        self.column_lambda = [x[1] for x in combined]
+        column_time = np.array([x[0] for x in combined])
+        column_lambda = np.array([x[1] for x in combined])
         
-        sim.init_points(self.column_time, self.column_lambda)
+        x = self.column_lambda ;x=x
+        column_lambda = numexpr.evaluate(trans_func)
+        
+        sim = LESimulation()
+        sim.init_points(column_time, column_lambda)
         return sim

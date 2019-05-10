@@ -30,9 +30,14 @@ class InputFrame(tk.Frame):
         self.button_getpath['text'] = 'Choose Import Path'
         self.button_getpath['command'] = self.pick_import_path
         
-        self.label_import_path = tk.Label(self, text = 'TEST')
+        self.label_import_path = tk.Label(self, text = 'CHOOSE IMPORT PATH')
         
-        self.mode_elements['file'] = [self.button_getpath, self.label_import_path]
+        self.label_entry_trans, self.entry_trans = (
+            self.create_text_input('Input Transformation (x):', 'x'))
+        
+        self.mode_elements['file'] = [self.button_getpath, self.label_import_path,
+                          self.label_entry_time, self.entry_time, 
+                          self.label_entry_trans, self.entry_trans]
         
         self.place_by_mode('equation')
         
@@ -65,8 +70,11 @@ class InputFrame(tk.Frame):
         if (mode == 'file'):
             self.button_getpath.grid( row = 0, column = 0, ipadx = 20, padx = 10, pady = 10 )
             self.label_import_path.grid( row = 0, column = 1, columnspan = 2 )
-            self.label_entry_time.grid( row = 1, column = 0, padx = 10, pady = 10 )
-            self.entry_time.grid( row = 1, column = 1 )   
+            to_place = [[1, self.label_entry_time, self.entry_time],
+                        [2, self.label_entry_trans, self.entry_trans]]
+            for r in to_place:
+                r[1].grid( row = r[0], column = 0, padx = 10, pady = 10 )
+                r[2].grid( row = r[0], column = 1 )
             
     def pick_import_path(self):
         self.import_path = filedialog.askopenfilename()
@@ -82,5 +90,9 @@ class InputFrame(tk.Frame):
     def get_samples(self):
         return int(self.entry_samples.get())
     
+    def get_transformation_function(self):
+        return self.entry_trans.get()
+    
     def create_sim(self):
-        return self.input_file.create_sim(self.get_time_bound())
+        return self.input_file.create_sim(self.get_time_bound(), 
+                                          self.get_transformation_function())
