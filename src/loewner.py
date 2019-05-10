@@ -41,8 +41,6 @@ class LESimulation:
         self.initialized = True
         self.init_type = 'equation'
         
-        print(self.time_step_part)
-        
     def init_points(self, time_domain, samples):
         self.driving_function = ''
         

@@ -77,5 +77,12 @@ class ImportFile:
         sim = LESimulation()
         if (not self.includes_time_values()):
            self.column_time = np.linspace(0, time_bound, self.rows)
+           
+        # sort both columns
+        combined = list(zip(self.column_time, self.column_lambda))
+        combined.sort(key=(lambda x: x[0]), reverse=True)
+        self.column_time = [x[0] for x in combined]
+        self.column_lambda = [x[1] for x in combined]
+        
         sim.init_points(self.column_time, self.column_lambda)
         return sim
