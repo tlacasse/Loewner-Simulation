@@ -21,32 +21,36 @@ class ExportFrame(tk.Frame):
         self.setup()
         
     def setup(self):
-        self.var_exportwhat = tk.StringVar()
-        
         self.button_getpath = tk.Button(self)
         self.button_getpath['text'] = 'Choose Export Path'
         self.button_getpath['command'] = self.pick_export_path
         self.button_getpath.grid( row = 0, column = 0, ipadx = 20 )
         
         self.label_export_path = tk.Label(self, text = '')
-        self.label_export_path.grid( row = 0, column = 1, columnspan = 2 )
+        self.label_export_path.grid( row = 0, column = 1, columnspan = 3 )
         
-        self.radio_exportwhat_samples = self.setup_radio('Samples', 0)
-        self.radio_exportwhat_hull = self.setup_radio('Hull', 1)
-        self.radio_exportwhat_both = self.setup_radio('Both', 2)
+        self.check_samples = tk.IntVar(value=1)
+        self.check_hull = tk.IntVar(value=1)
+        self.check_xy = tk.IntVar()
         
-        self.radio_exportwhat_both.select()
+        self.box_exportwhat_samples = self.setup_box('Samples', 0, self.check_samples)
+        self.box_exportwhat_hull = self.setup_box('Hull', 1, self.check_hull)
+        self.box_exportwhat_xy = self.setup_box('Hull X & Y', 2, self.check_xy)
         
         self.button_run = tk.Button(self)
         self.button_run['text'] = 'Export'
         self.button_run['command'] = self.run_and_close
         self.button_run.grid( row = 2, column = 1, ipadx = 20 )
         
-    def setup_radio(self, value, num):
-        radio = tk.Radiobutton(self, text=value,
-                        variable=self.var_exportwhat, value=value.lower())
-        radio.grid( row = 1, column = num)
-        return radio
+    def setup_box(self, value, num, var):
+        check = tk.Checkbutton(self, text=self._pad_box_prompt(value), 
+                               variable=var, padx = 10)
+        check.grid( row = 1, column = num )
+        return check
+    
+    def _pad_box_prompt(self, prompt):
+        max_len = 10
+        return (prompt + (' ' * 20))[:max_len]
 
     def run_and_close(self):
         self.export_func()
@@ -59,4 +63,8 @@ class ExportFrame(tk.Frame):
         self.master.focus_force()
         
     def get_what_to_export(self):
-        return self.var_exportwhat.get()
+        return {
+            'samples': bool(self.check_samples.get()),
+            'hull': bool(self.check_hull.get()), 
+            'xy': bool(self.check_xy.get())
+        }

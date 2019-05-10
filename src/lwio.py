@@ -2,32 +2,45 @@ from loewner import LESimulation
 import numpy as np
 
 def clean_complex(z):
-    s = str(z).replace('j','i')
-    if (s[0] == '('): 
-        s = s[1:-1]
-    if (z.real == 0):
-        s = '0+' + s
-    return s
+    if (hasattr(z, 'real')):
+        s = str(z).replace('j','i')
+        if (s[0] == '('): 
+            s = s[1:-1]
+        if (z.real == 0):
+            s = '0.0+' + s
+        return s
+    else:
+        return str(z)
 
 def read_complex(zstr):
     # complex() cannot have extra spaces
     return complex(zstr.replace(' ', '').replace('i', 'j'))
 
-def export_sim(sim, file_name, do_df, do_hull):
+def export_sim(sim, file_name, export_info):
+    headers = []
+    maps = []
+    if (export_info['samples']):
+        headers.append('lambda(t)')
+        maps.append(lambda sim, i: sim.samples[i])
+    if (export_info['hull']):
+        headers.append('hull')
+        maps.append(lambda sim, i: clean_complex(sim.hull[i]))
+    if (export_info['xy']):
+        headers.append('hull-x')
+        headers.append('hull-y')
+        maps.append(lambda sim, i: sim.hull[i].real)
+        maps.append(lambda sim, i: sim.hull[i].imag)
+    
     with open(file_name, 'w') as file:
         fields = ['t']
-        if do_df:
-            fields.append('lambda(t)')
-        if do_hull:
-            fields.append('hull')  
+        for header in headers:
+            fields.append(header)
         file.write(','.join(fields) + '\n')
         
         for i in range(sim.sample_count):
             values = [str(sim.time_domain[i])]
-            if do_df:
-                values.append(str(sim.samples[i]))
-            if do_hull:
-                values.append(clean_complex(sim.hull[i]))
+            for mapper in maps:
+                values.append(str(mapper(sim, i)))
             file.write(','.join(values) + '\n')
             
 class ImportFile:

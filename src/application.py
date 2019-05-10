@@ -96,11 +96,5 @@ class Application(tk.Frame):
             
     def __export_simulation(self):
         what = self.frame_export.get_what_to_export()
-        export_samples = False
-        export_hull = False
-        if (what == 'samples' or what == 'both'):
-            export_samples = True
-        if (what == 'hull' or what == 'both'):
-            export_hull = True
         path = self.frame_export.export_path
-        lwio.export_sim(self.sim, path, export_samples, export_hull)
+        lwio.export_sim(self.sim, path, what)
