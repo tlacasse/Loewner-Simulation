@@ -8,21 +8,27 @@ class ModeSwitchFrame(tk.Frame):
         self.setup(onclick) 
         
     def setup(self, onclick):
+        self['padx'] = 10
+        
+        self.labelframe = tk.LabelFrame(self, text = 'Input Method')
+        self.labelframe.grid( row = 0, column = 0)
+        base = self.labelframe
+        
         self.var_mode = tk.StringVar()
         
-        self.radio_mode_equation = tk.Radiobutton(self, text = 'Equation',
-                        variable = self.var_mode, value='equation')
+        self.radio_equation = tk.Radiobutton(
+                base, text = 'Equation', variable = self.var_mode, value ='equation')
         
-        self.radio_mode_file = tk.Radiobutton(self, text = 'File',
-                        variable = self.var_mode, value='file')
+        self.radio_file = tk.Radiobutton(base, text = 'File    ', 
+                                         variable = self.var_mode, value='file')
         
-        self.radio_mode_equation.select()
+        self.radio_equation.select()
         
-        self.radio_mode_equation['command'] = onclick
-        self.radio_mode_file['command'] = onclick
+        self.radio_equation['command'] = onclick
+        self.radio_file['command'] = onclick
         
-        self.radio_mode_equation.grid( row = 0, column = 0 )
-        self.radio_mode_file.grid( row = 0, column = 1 )
+        self.radio_equation.grid( row = 1, column = 0 )
+        self.radio_file.grid( row = 2, column = 0 )
         
     def get_mode(self):
         return self.var_mode.get()
