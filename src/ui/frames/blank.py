@@ -6,6 +6,7 @@ class BlankFrame(tk.Frame):
         super().__init__(master)
         self.master = master
         self.control = control
+        self.id = None
         
     def setup(self):
         pass

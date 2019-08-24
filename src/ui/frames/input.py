@@ -1,11 +1,9 @@
-import tkinter as tk
+from ui.frames.blank import BlankFrame
 
-class InputFrame(tk.Frame):
+class InputFrame(BlankFrame):
     
     def __init__(self, master=None, control=None):
-        super().__init__(master)
-        self.master = master
-        self.control = control
+        super().__init__(master, control)
         
     def setup(self):
         pass

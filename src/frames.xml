@@ -2,4 +2,8 @@
 	<blank row="0" col="0">
 		<input row="0" col="0"/>
 	</blank>
+	<blank row="1" col="0">
+		<graph row="0" col="0" id="graph_df"/>
+		<graph row="0" col="1" id="graph_hull"/>
+	</blank>
 </application>
