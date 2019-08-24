@@ -1,10 +1,10 @@
+from ui.frames.blank import BlankFrame
+
 import tkinter as tk
 
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (
         FigureCanvasTkAgg, NavigationToolbar2Tk)
-
-from ui.frames.blank import BlankFrame
 
 class GraphFrame(BlankFrame):
     

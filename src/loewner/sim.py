@@ -1,6 +1,6 @@
 import numpy as np
 import numexpr
-from brownian import brownian
+from loewner.brownian import brownian
 
 # force to upper half-plane
 def _zflip(z):
