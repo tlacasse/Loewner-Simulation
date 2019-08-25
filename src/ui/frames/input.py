@@ -14,7 +14,7 @@ class InputFrame(BlankFrame):
        self.entry_samples = self.create_text_input('# Samples:', '1000', 2)
     
     def create_text_input(self, prompt, default, i):
-        newlabel = tk.Label(self, text = prompt)
+        newlabel = tk.Label(self, text=prompt)
         newinput = tk.Entry(self, exportselection=0)
         newinput.insert(0, default)
         
@@ -39,6 +39,4 @@ class InputFrame(BlankFrame):
         
         self.entry_df.delete(0, tk.END)
         self.entry_df.insert(0, sim.driving_function)
-        
         return sim
-        

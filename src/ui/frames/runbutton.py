@@ -7,10 +7,10 @@ class RunButtonFrame(BlankFrame):
         super().__init__(master, control)
         
     def setup(self):
-        def run():
+        def command():
             self.control.execute(self.control.run_simulation)
         
         button_run = tk.Button(self)
         button_run['text'] = 'Run'
-        button_run['command'] = run
+        button_run['command'] = command
         button_run.grid(row=0, column=0, ipadx=20)
