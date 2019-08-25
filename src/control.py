@@ -14,8 +14,7 @@ class Control:
             self.update_message('Computation Time: ' + str(stop - start) + 's')
         except Exception as e:
             message = repr(e)
-            #message = message[(message.rfind(')')+1):]
-            self.update_message(message) #todo: improve this
+            self.update_message(message)
             
     def run_simulation(self):
         sim = self.app('input').build_sim()
