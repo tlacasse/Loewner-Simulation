@@ -11,6 +11,6 @@ class RunMessageFrame(BlankFrame):
         self.label.grid(row=0, column=0, padx=75)
         
     def update(self, text):
-        text = text + (' ' * 100)
+        text = text + (' ' * 50)
         text = text[:50]
         self.label['text'] = text

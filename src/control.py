@@ -21,6 +21,11 @@ class Control:
             message = repr(e)
             self.display_error_message(message)
             
+    def update_message(self, text):
+        def func():
+            self.app('run_message').update(text)
+        self.execute(func, timeit=False)
+        
     def display_error_message(self, text):
         def func():
             popup = tk.Toplevel()
@@ -30,11 +35,11 @@ class Control:
         self.execute(func, timeit=False)
         
     def run_simulation(self):
-        sim = self.app('input').build_sim()
-        self.sim = sim
-        sim.compute_hull()
-        self.app('graph_df').update(sim.time_domain, sim.samples)
-        self.app('graph_hull').update(sim.hull.real, sim.hull.imag)
+        def func():
+            sim = self.app('input').build_sim()
+            self.sim = sim
+            sim.compute_hull()
+            self.app('graph_df').update(sim.time_domain, sim.samples)
+            self.app('graph_hull').update(sim.hull.real, sim.hull.imag)
+        self.execute(func)
         
-    def update_message(self, text):
-        self.app('run_message').update(text)
