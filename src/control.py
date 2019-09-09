@@ -1,3 +1,7 @@
+import tkinter as tk
+
+from ui.frames.error.errormessage import ErrorMessageFrame
+
 import time
 
 class Control:
@@ -6,16 +10,25 @@ class Control:
         self.app = app
         self.sim = None
 
-    def execute(self, func):
+    def execute(self, func, timeit=True):
         try:
             start = time.time()
             func()
             stop = time.time()
-            self.update_message('Computation Time: ' + str(stop - start) + 's')
+            if timeit:
+                self.update_message('Computation Time: ' + str(stop - start) + 's')
         except Exception as e:
             message = repr(e)
-            self.update_message(message)
+            self.display_error_message(message)
             
+    def display_error_message(self, text):
+        def func():
+            popup = tk.Toplevel()
+            popup.wm_title('Error')
+            frame = ErrorMessageFrame(popup, self, text)
+            frame.grid()
+        self.execute(func, timeit=False)
+        
     def run_simulation(self):
         sim = self.app('input').build_sim()
         self.sim = sim
