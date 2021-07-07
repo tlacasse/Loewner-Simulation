@@ -1,11 +1,11 @@
-from loewner import LESimulation
+from loewner.sim import LESimulation
 import numpy as np
 import numexpr
 
 def clean_complex(z):
     if (hasattr(z, 'real')):
         s = str(z).replace('j','i')
-        if (s[0] == '('): 
+        if (s[0] == '('):
             s = s[1:-1]
         if (z.real == 0):
             s = '0.0+' + s
